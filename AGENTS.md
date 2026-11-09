@@ -7,3 +7,5 @@ Use `skills/orchestrator/SKILL.md` and its companions as reference guidance. The
 For the reference deployment, use an already-authorized Sprites MCP connector and run `python -m bridge.cli` within the cloned repository. No additional MCP server or external API key is required for active ChatGPT-turn inference.
 
 Run `python -m pytest -q` before publishing changes. See README and ROADMAP for what is shipped.
+
+The preferred machine-readable interface is `python -m bridge.tools '{"tool":"tools.list","arguments":{}}'`, called via the existing Sprite MCP exec. Do not claim these names are automatically registered as MCP tools.

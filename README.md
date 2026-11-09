@@ -109,6 +109,20 @@ The `next` command returns a `batch_id`, `prompt_id` and native LangExtract `pro
 
 Read `skills/` for a ChatGPT/Sprites reference implementation; skill files are not automatically discoverable without ChatGPT installation/authorization.
 
+## Sprite-side tool interface (no additional MCP server)
+
+The existing Fly Sprites MCP already provides authenticated `exec` and file operations. This project now exposes a **fixed JSON tool dispatcher inside the Sprite**; the ChatGPT plugin and skills call it through the existing `exec` tool. It is **not** a separate MCP server and does not dynamically register tools with Fly MCP.
+
+```bash
+python -m bridge.tools '{"tool":"tools.list","arguments":{}}'
+python -m bridge.tools '{"tool":"langextract.list","arguments":{"limit":10}}'
+python -m bridge.tools '{"tool":"langextract.status","arguments":{"job_id":"JOB_ID"}}'
+```
+
+Available tool names: `langextract.create`, `langextract.next`, `langextract.submit`, `langextract.list`, `langextract.status`, `langextract.result`, `langextract.audit`, `langextract.repair`. `tools.list` returns the fixed tool catalog. Each operation returns `{"ok":true,"result":...}` or `{"ok":false,"error":...}`; invalid calls fail closed. The dispatcher does not execute arbitrary shell commands.
+
+This is a **Sprite-side tool protocol**, not eight independently registered MCP tools. To get named tools in ChatGPT's tool picker, a plugin must wrap the dispatcher with the existing Fly Sprites MCP exec call or Fly must support tool registration; that has not been established. Large or sensitive documents should use the protected `data/inputs/` file interface rather than shell arguments.
+
 ## Security boundaries
 
 Original document text, prompt text and model responses are sensitive. SQLite state is stored locally; data directories get mode 0700 and DB files mode 0600. The `data/` directory is ignored by Git. For sensitive content, prefer `--file` rather than inline `--data` because process argument lists can expose values. Do not expose the CLI via a public API without explicit authentication and multi-tenant isolation.

@@ -1,6 +1,6 @@
 # LangExtract Sprite extension roadmap
 
-Goal: build **reusable infrastructure around LangExtract**, without duplicating native chunking, provider routing, source alignment, or visualization.
+Primary goal: make Google LangExtract usable **without an external model API key**, with an active ChatGPT conversation as the inference engine and a ChatGPT plugin/skills orchestrating an existing authenticated Fly Sprites MCP connection. Build reusable infrastructure around LangExtract without duplicating native chunking, provider routing, source alignment, or visualization.
 
 ## Shipped in 0.1.0
 
@@ -10,6 +10,7 @@ Goal: build **reusable infrastructure around LangExtract**, without duplicating 
 - Invalid response validation and failed-job repair.
 - Job listing without source disclosure and audit of source/response integrity and grounded spans.
 - ChatGPT/Sprites MCP reference workflow requiring an authenticated connector and active inference turn.
+- Fixed Sprite-side JSON tool dispatcher for eight LangExtract operations through the existing Fly MCP `exec` tool; not a new MCP server.
 
 ## Planned, not implemented
 
