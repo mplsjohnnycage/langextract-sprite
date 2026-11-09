@@ -136,3 +136,7 @@ See [ROADMAP.md](ROADMAP.md), [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.m
 ## License and attribution
 
 Apache-2.0. This project depends on the independently maintained [google/langextract](https://github.com/google/langextract) Python package, which is also Apache-2.0 licensed.
+
+## ChatGPT plugin and skills
+
+The open-source installable ChatGPT plugin template lives in [`plugin/`](plugin/README.md). Configure your authorized Sprite and local Python executable before installing. The plugin uses the existing Fly Sprites MCP `exec` to call `python -m bridge.tools` and needs no additional MCP server or model API key.
