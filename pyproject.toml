@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "langextract-sprite"
+version = "0.1.0"
+description = "Durable, auditable extraction orchestration on Google LangExtract"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+authors = [{name = "LangExtract Sprite contributors"}]
+keywords = ["langextract", "llm", "extraction", "source-grounding", "human-in-the-loop", "sprite"]
+classifiers = ["Development Status :: 3 - Alpha", "Programming Language :: Python :: 3", "Topic :: Text Processing"]
+dependencies = ["langextract==1.7.2"]
+
+[project.scripts]
+langextract-sprite = "bridge.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/mplsjohnnycage/langextract-sprite"
+Issues = "https://github.com/mplsjohnnycage/langextract-sprite/issues"
+Upstream = "https://github.com/google/langextract"
+
+[tool.setuptools.packages.find]
+include = ["bridge*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
