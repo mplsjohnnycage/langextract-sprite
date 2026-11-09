@@ -140,3 +140,15 @@ Apache-2.0. This project depends on the independently maintained [google/langext
 ## ChatGPT plugin and skills
 
 The open-source installable ChatGPT plugin template lives in [`plugin/`](plugin/README.md). Configure your authorized Sprite and local Python executable before installing. The plugin uses the existing Fly Sprites MCP `exec` to call `python -m bridge.tools` and needs no additional MCP server or model API key.
+
+## One-command setup (recommended)
+
+On an authorized Fly Sprite with Python 3.12+ and this repository checked out:
+
+```bash
+python3 quickstart.py --sprite YOUR_AUTHORIZED_SPRITE --project-dir "$(pwd)"
+```
+
+This creates or reuses `.venv`, installs the project (using `uv` if available, otherwise `pip`), verifies all eight Sprite-side operations, and generates `dist/langextract-sprite-chatgpt-plugin.zip` with the correct Sprite name and checkout path. `python3 quickstart.py --help` lists options; `--bundle-only` skips runtime installation.
+
+In ChatGPT, connect and authorize Fly Sprites, upload the generated ZIP as a private ChatGPT plugin where plugin creation is available, and activate it. This command cannot automatically install, authorize, or publicly publish a ChatGPT plugin. Active ChatGPT inference is still required; no external model API key is needed.
