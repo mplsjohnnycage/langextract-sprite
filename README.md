@@ -216,3 +216,15 @@ Persistent data defaults to `./data/` for source checkouts and to `$XDG_STATE_HO
 - [Upstream Google LangExtract](https://github.com/google/langextract)
 
 **License:** [Apache 2.0](LICENSE). This project depends on, but does not fork or bundle, Google LangExtract.
+
+## Enforced skill rules and deterministic gateway
+
+The four [`plugin/skills/`](plugin/skills/) contain explicit **MUST / MUST NOT** operating requirements, rather than optional workflow advice. The included [`plugin/scripts/workflow.py`](plugin/scripts/workflow.py) enforces deterministic lifecycle gates: `doctor`, `start`, `next`, `submit`, `resume`, `list`, `repair`, and `finish`. `finish` refuses a success result unless the job is complete and every stored response and source-aligned extraction passes integrity checks with **zero unverified spans**.
+
+```bash
+.venv/bin/python plugin/scripts/workflow.py doctor
+.venv/bin/python plugin/scripts/workflow.py resume --job-id JOB_ID
+.venv/bin/python plugin/scripts/workflow.py finish --job-id JOB_ID
+```
+
+Run these commands through the **existing authorized Fly Sprites MCP**. The script never calls an LLM; ChatGPT still performs inference in an active session. See [plugin/README.md](plugin/README.md) for the mandatory end-to-end workflow and protected input file requirements.

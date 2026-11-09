@@ -16,12 +16,14 @@ class SetupTests(unittest.TestCase):
             with zipfile.ZipFile(path) as z:
                 names = z.namelist()
                 self.assertIn('plugin.json', names)
+                self.assertIn('scripts/workflow.py', names)
+                self.assertIn('MUST', z.read('skills/orchestrator/SKILL.md').decode())
                 self.assertEqual(len([n for n in names if n.endswith('SKILL.md')]), 4)
                 orchestrator = z.read('skills/orchestrator/SKILL.md').decode()
                 self.assertIn('example-sprite', orchestrator)
                 self.assertIn('/srv/langextract/.venv/bin/python', orchestrator)
                 self.assertNotIn('YOUR_AUTHORIZED_SPRITE', orchestrator)
-                self.assertEqual(json.loads(z.read('plugin.json'))['version'], '0.1.3')
+                self.assertEqual(json.loads(z.read('plugin.json'))['version'], '0.1.4')
     def test_invalid_sprite(self):
         with tempfile.TemporaryDirectory() as directory:
             with self.assertRaises(ValueError):

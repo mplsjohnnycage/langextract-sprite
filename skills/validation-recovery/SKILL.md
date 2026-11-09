@@ -1,14 +1,13 @@
 ---
 name: langextract-sprite-validation-recovery
-description: Validate and recover evidence-grounded LangExtract extraction jobs running on a Sprite.
+description: REQUIRED fail-closed validation, recovery, and completion checks for LangExtract Sprite jobs.
 ---
 
-# Validation and recovery
+# Mandatory validation and recovery
 
-- Run `python -m bridge.cli status <job-id>` and `python -m bridge.cli result <job-id>` with existing Sprites MCP.
-- Finalized results are parsed and aligned by **native LangExtract**; `verified_extractions` have exact source character offsets and matched verbatim source text. `unverified_extractions` are explicitly excluded from verified evidence.
-- Verify `source_sha256` against original document; do not treat model-produced claims as independently true merely because their source text is present.
-- Invalid JSON submissions are rejected atomically; fix the response and retry using the original batch_id.
-- Identical duplicate submissions are idempotent. Conflicting resubmissions are rejected, not overwritten.
-- If LangExtract finalization fails, read `status.error` and inspect the relevant prompt. Use `python -m bridge.cli repair <job-id> <prompt-id>` to reopen a failed job's specific prompt, then fetch and submit a corrected batch. Do not change original source text.
-- Interrupted runs remain `awaiting_model` with SQLite state across process restarts. For true permanent background inference, explicitly authorize a separate model API; Sprite alone cannot call the current conversation.
+1. **MUST** use the deterministic gateway to manage state. The complete sequence is `doctor`, `start`/`resume`, `next`, active inference, `submit`, and `finish`; `repair` is only for failed jobs. **MUST NOT** fabricate a successful call or infer state from a previous conversation.
+2. **MUST** inspect the JSON `ok` on every script call. A nonzero exit or `ok=false` **MUST** block success. If a submission fails, inspect current job status/error through `bridge.tools` and reconcile IDs/payloads. **MUST NOT** retry with guessed batch IDs, mutate original source text, or overwrite an already accepted response.
+3. If native LangExtract finalization fails, **MUST** identify the failed job and exact prompt before calling gateway `repair --job-id JOB_ID --prompt-id PROMPT_ID`. Repair **MUST NOT** be used on completed jobs. After repair, **MUST** fetch, reason, and submit the corrected batch, then finish again.
+4. **MUST** use gateway `finish --job-id JOB_ID` to verify **all** of the following before reporting success: `state=completed`, `pending=0`, result available, stored SHA-256 equals status SHA-256, audit `ok=true` with zero issues, response count equals total prompts, verified span count equals recorded span count, and **zero unverified extractions**. **MUST NOT** bypass this gate with a basic `status` call.
+5. **MUST** output verified quotes with their exact `start`/`end` offsets; model assertions, interpretations, and document allegations are **not** independent facts merely because offsets match.
+6. On interruption, **MUST** preserve the durable job ID and pending count, explain that ChatGPT is not running in the background, and state `resume --job-id JOB_ID` as the next action. **MUST NOT** claim completion when it has not passed `finish`.

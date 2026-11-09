@@ -23,11 +23,14 @@ def build_bundle(sprite, project_dir, output):
     output.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(output, 'w', compression=zipfile.ZIP_DEFLATED) as archive:
         for path in sorted((ROOT / 'plugin').rglob('*')):
-            if not path.is_file():
+            if not path.is_file() or '__pycache__' in path.parts or path.suffix in ('.pyc', '.pyo'):
                 continue
-            data = path.read_text(encoding='utf-8')
-            data = data.replace('YOUR_AUTHORIZED_SPRITE', sprite)
-            data = data.replace('/path/to/langextract-sprite', project_dir.rstrip('/'))
+            if path.suffix in ('.md', '.py', '.json', '.txt', '.yaml', '.yml'):
+                data = path.read_text(encoding='utf-8')
+                data = data.replace('YOUR_AUTHORIZED_SPRITE', sprite)
+                data = data.replace('/path/to/langextract-sprite', project_dir.rstrip('/'))
+            else:
+                data = path.read_bytes()
             archive.writestr(path.relative_to(ROOT / 'plugin').as_posix(), data)
     return output
 
